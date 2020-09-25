@@ -5,6 +5,7 @@ data class Device(val id: String,
                   val type: DeviceType,
                   val duration: Int,
                   val brightness: Int,
+                  val colorTemp: Int?,
                   val hue: Int?,
                   val saturation: Int?)
 

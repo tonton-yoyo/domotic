@@ -40,7 +40,7 @@ class IFTTTControllerTest {
     @Test
     fun `sunrise should call TPLInK repository if the device is known`() {
         //Given
-        val device = Device("device", "123456789", DeviceType.SIMPLE_BULB, 30000, 100, 180, 50)
+        val device = Device("device", "123456789", DeviceType.SIMPLE_BULB, 30000, 100, null, 180, 50)
         given(deviceService.getDeviceByName("123456789")).willReturn(device)
 
         // When

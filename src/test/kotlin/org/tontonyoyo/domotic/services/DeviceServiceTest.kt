@@ -12,8 +12,8 @@ import java.io.File
 
 class DeviceServiceTest {
 
-    private val device1 = Device("1", "device1", DeviceType.COLOR_BULB, 30000, 80, 180, 50)
-    private val device2 = Device("2", "device2", DeviceType.SIMPLE_BULB, 30000, 100, null, null)
+    private val device1 = Device("1", "device1", DeviceType.COLOR_BULB, 30000, 80, null, 180, 50)
+    private val device2 = Device("2", "device2", DeviceType.SIMPLE_BULB, 30000, 100, null, null, null)
 
     private lateinit var objectMapper: ObjectMapper
     private lateinit var deviceService: DeviceService
@@ -93,7 +93,7 @@ class DeviceServiceTest {
     fun `createDevice should create a new device and save it if the device doesn't exist`() {
         // Given
         // the service with 2 devices : device1 and device2
-        val expectedNewDevice = Device("3", "device3", DeviceType.SIMPLE_BULB, 30000, 100, null, null)
+        val expectedNewDevice = Device("3", "device3", DeviceType.SIMPLE_BULB, 30000, 100, null, null, null)
 
         // When
         deviceService.createDevice("3", "device3", DeviceType.SIMPLE_BULB, 30000, 100, null, null)

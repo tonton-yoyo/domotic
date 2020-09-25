@@ -19,6 +19,8 @@ class TPLinkRepository @Autowired constructor(
         private val restTemplate: RestTemplate,
         @Value("\${token}") val token: String) {
 
+    private val PASSTHROUGH = "passthrough"
+    private val GET_DEVICE_LIST = "getDeviceList"
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     fun callLightingService(device: Device) {
@@ -42,15 +44,16 @@ class TPLinkRepository @Autowired constructor(
         val transitionLightState = TransitionLightState(
                 transitionPeriod = device.duration,
                 brightness = device.brightness,
+                colorTemp = device.colorTemp,
                 hue = device.hue,
                 saturation = device.saturation
         )
         val lightService = LightService(transitionLightState)
         val requestData = objectMapper.writeValueAsString(RequestData(lightService))
-        return Request(params = RequestParams(device.id, requestData))
+        return Request(PASSTHROUGH, RequestParams(device.id, requestData))
     }
 
-    data class Request(val method: String = "passthrough", val params: RequestParams)
+    data class Request(val method: String, val params: RequestParams)
 
     data class RequestParams(val deviceId: String, val requestData: String)
 
@@ -72,6 +75,8 @@ class TPLinkRepository @Autowired constructor(
             @JsonProperty("transition_period")
             val transitionPeriod: Int,
             val brightness: Int,
+            @JsonProperty("color_temp")
+            val colorTemp: Int?,
             val hue: Int?,
             val saturation: Int?
     )
