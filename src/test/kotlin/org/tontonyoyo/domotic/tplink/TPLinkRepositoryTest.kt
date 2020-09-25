@@ -35,7 +35,7 @@ class TPLinkRepositoryTest {
             "requestData": "{\"smartlife.iot.smartbulb.lightingservice\":{\"transition_light_state\":{\"ignore_default\":1,\"on_off\":1,\"transition_period\":30000,\"brightness\":100,\"hue\":180,\"saturation\":50}}}"
             }
         }""".trimEnd()
-        val device = Device("device", "123456789", DeviceType.SIMPLE_BULB, 30000, 100, 180, 50)
+        val device = Device("123456789", "device", DeviceType.SIMPLE_BULB, 30000, 100, 180, 50)
         server.expect(MockRestRequestMatchers.requestTo("https://wap.tplinkcloud.com?token=token"))
                 .andExpect(MockRestRequestMatchers.content().json(expectedBody))
                 .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
@@ -51,7 +51,7 @@ class TPLinkRepositoryTest {
     @Test
     fun `repository should manage no response (null body) from TPLink`() {
         // Given
-        val device = Device("device", "123456789", DeviceType.SIMPLE_BULB, 30000, 100, 180, 50)
+        val device = Device("123456789", "device", DeviceType.SIMPLE_BULB, 30000, 100, 180, 50)
         server.expect {}.andRespond(MockRestResponseCreators.withSuccess().contentType(MediaType.APPLICATION_JSON))
 
         // When
@@ -70,7 +70,7 @@ class TPLinkRepositoryTest {
                 "        \"responseData\": \"{\\\"smartlife.iot.smartbulb.lightingservice\\\":{\\\"transition_light_state\\\":{\\\"on_off\\\":1,\\\"mode\\\":\\\"normal\\\",\\\"hue\\\":0,\\\"saturation\\\":0,\\\"color_temp\\\":0,\\\"brightness\\\":100,\\\"err_code\\\":0}}}\"\n" +
                 "    }\n" +
                 "}"
-        val device = Device("device", "123456789", DeviceType.SIMPLE_BULB, 30000, 100, 180, 50)
+        val device = Device("123456789", "device", DeviceType.SIMPLE_BULB, 30000, 100, 180, 50)
         server.expect {}.andRespond(MockRestResponseCreators.withSuccess(response, MediaType.APPLICATION_JSON))
 
         // When
@@ -83,7 +83,7 @@ class TPLinkRepositoryTest {
     @Test
     fun `repository should catch exception during calling of TPLink`() {
         // Given
-        val device = Device("device", "123456789", DeviceType.SIMPLE_BULB, 30000, 100, 180, 50)
+        val device = Device("123456789", "device", DeviceType.SIMPLE_BULB, 30000, 100, 180, 50)
         server.expect {}.andRespond(MockRestResponseCreators.withServerError())
 
         // When

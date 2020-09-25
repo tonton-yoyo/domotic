@@ -15,33 +15,36 @@
     <p th:if="${error} != null" class="text-danger" th:text="${error}"></p>
     <div class="panel panel-info" th:each="device : ${devices}">
         <div class="panel-heading">
-            Devises : <span th:text="${device.name}"></span>
-            <form method="POST" th:action="${'/devices/' + device.name + '/delete'}" class="pull-right">
-                <input name="name" th:value="${device.name}" type="hidden"/>
+            Devises : <span th:text="${device.id}"></span>
+            <form method="POST" th:action="${'/devices/' + device.id + '/delete'}" class="pull-right">
                 <button type="submit" class="btn btn-danger btn-xs">X</button>
             </form>
         </div>
         <div class="panel-body">
-            <form method="POST" th:action="${'/devices/' + device.name + '/update'}" th:switch="${device.type.name()}">
+            <form method="POST" th:action="${'/devices/' + device.id + '/update'}" th:switch="${device.type.name()}">
                 <div class="form-group">
-                    <label th:for="${'duration-' + device.name}">Duration</label>
-                    <input th:id="${'duration-' + device.name}" name="duration" th:value="${device.duration}" type="number" class="form-control"/>
+                    <label th:for="${'duration-' + device.id}">Name</label>
+                    <input th:id="${'duration-' + device.id}" name="name" th:value="${device.name}" type="text" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label th:for="${'duration-' + device.id}">Duration</label>
+                    <input th:id="${'duration-' + device.id}" name="duration" th:value="${device.duration}" type="number" class="form-control"/>
                 </div>
                 <div th:case="'SIMPLE_BULB'" class="form-group">
-                    <label th:for="${'brightness-' + device.name}">Brightness</label>
-                    <input th:id="${'brightness-' + device.name}" name="brightness" th:value="${device.brightness}"
+                    <label th:for="${'brightness-' + device.id}">Brightness</label>
+                    <input th:id="${'brightness-' + device.id}" name="brightness" th:value="${device.brightness}"
                            type="number" min="0" max="100" class="form-control"/>
                 </div>
                 <div th:case="'COLOR_BULB'" class="form-group">
                     <label>Color</label>
-                    <div th:id="${'colorPicker-' + device.name}"></div>
-                    <input th:id="${'brightness-' + device.name}" name="brightness" th:value="${device.brightness}"
+                    <div th:id="${'colorPicker-' + device.id}"></div>
+                    <input th:id="${'brightness-' + device.id}" name="brightness" th:value="${device.brightness}"
                            type="hidden"/>
-                    <input th:id="${'hue-' + device.name}" name="hue" th:value="${device.hue}" type="hidden"/>
-                    <input th:id="${'saturation-' + device.name}" name="saturation"
+                    <input th:id="${'hue-' + device.id}" name="hue" th:value="${device.hue}" type="hidden"/>
+                    <input th:id="${'saturation-' + device.id}" name="saturation"
                            th:value="${device.saturation}" type="hidden"/>
                     <script type="application/javascript" th:inline="javascript">
-                        var colorPicker = new iro.ColorPicker([[${'#colorPicker-' + device.name}]], {
+                        var colorPicker = new iro.ColorPicker([[${'#colorPicker-' + device.id}]], {
                             color: {
                                 h: [[${device.hue}]],
                                 s: [[${device.saturation}]],
@@ -49,9 +52,9 @@
                             }
                         });
                         colorPicker.on('color:change', function (color) {
-                            document.getElementById([[${'brightness-' + device.name}]]).value = color.value
-                            document.getElementById([[${'hue-' + device.name}]]).value = color.hue
-                            document.getElementById([[${'saturation-' + device.name}]]).value = color.saturation
+                            document.getElementById([[${'brightness-' + device.id}]]).value = color.value
+                            document.getElementById([[${'hue-' + device.id}]]).value = color.hue
+                            document.getElementById([[${'saturation-' + device.id}]]).value = color.saturation
                         });
                     </script>
                 </div>
@@ -64,12 +67,12 @@
         <div class="panel-body">
             <form method="POST" action="/devices">
                 <div class="form-group">
-                    <label for="newName">Name</label>
-                    <input id="newName" name="name" type="text" class="form-control" required/>
-                </div>
-                <div class="form-group">
                     <label for="newId">Id</label>
                     <input id="newId" name="id" type="text" class="form-control" required/>
+                </div>
+                <div class="form-group">
+                    <label for="newName">Name</label>
+                    <input id="newName" name="name" type="text" class="form-control" required/>
                 </div>
                 <div class="form-group">
                     <label for="newType">Type</label>

@@ -1,7 +1,7 @@
 package org.tontonyoyo.domotic.models
 
-data class Device(val name: String,
-                  val id: String,
+data class Device(val id: String,
+                  val name: String,
                   val type: DeviceType,
                   val duration: Int,
                   val brightness: Int,

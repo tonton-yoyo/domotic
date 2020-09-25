@@ -19,8 +19,8 @@ class WebController @Autowired constructor(val deviceService: DeviceService) {
     }
 
     @PostMapping("/devices")
-    fun createDevice(@RequestParam name: String,
-                     @RequestParam id: String,
+    fun createDevice(@RequestParam id: String,
+                     @RequestParam name: String,
                      @RequestParam type: DeviceType,
                      @RequestParam duration: Int,
                      @RequestParam brightness: Int,
@@ -30,33 +30,35 @@ class WebController @Autowired constructor(val deviceService: DeviceService) {
         try {
             deviceService.createDevice(name, id, type, duration, brightness, hue, saturation)
         } catch (ex: DeviceAlreadyExistException) {
-            model.addAttribute("error", "A device already exist with the name ${ex.name}")
+            model.addAttribute("error", "A device already exist with the id or name ${ex.idOrName}")
         }
         return getDevices(model)
     }
 
-    @PostMapping("/devices/{name}/update")
-    fun updateDevice(@PathVariable("name") name: String,
+    @PostMapping("/devices/{id}/update")
+    fun updateDevice(@PathVariable("id") id: String,
+                     @RequestParam name: String,
                      @RequestParam duration: Int,
                      @RequestParam brightness: Int,
                      @RequestParam(required = false) hue: Int?,
                      @RequestParam(required = false) saturation: Int?,
                      model: Model): String {
         try {
-            deviceService.updateDevice(name, duration, brightness, hue, saturation)
+            deviceService.updateDevice(id, name, duration, brightness, hue, saturation)
         } catch (ex: DeviceNotFoundException) {
-            model.addAttribute("error", "No device found with the name ${ex.name}")
+            model.addAttribute("error", "No device found with the id ${ex.id}")
+        } catch (ex: DeviceAlreadyExistException) {
+            model.addAttribute("error", "A device already exists for the name ${ex.idOrName}")
         }
         return getDevices(model)
     }
 
     @PostMapping("/devices/{name}/delete")
-    fun deleteDevice(@PathVariable("name") name: String,
-                     model: Model): String {
+    fun deleteDevice(@PathVariable("name") name: String, model: Model): String {
         try {
             deviceService.removeDevice(name)
         } catch (ex: DeviceNotFoundException) {
-            model.addAttribute("error", "No device found with the name ${ex.name}")
+            model.addAttribute("error", "No device found with the id ${ex.id}")
         }
         return getDevices(model)
     }

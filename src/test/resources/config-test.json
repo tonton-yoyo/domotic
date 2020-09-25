@@ -1,14 +1,14 @@
 [
   {
-    "name": "device2",
     "id": "2",
+    "name": "device2",
     "type": "SIMPLE_BULB",
     "duration": 30000,
     "brightness": 100
   },
   {
-    "name": "device1",
     "id": "1",
+    "name": "device1",
     "type": "COLOR_BULB",
     "brightness": 80,
     "duration": 30000,

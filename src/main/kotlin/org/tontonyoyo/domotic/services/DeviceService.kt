@@ -14,40 +14,45 @@ import javax.annotation.PostConstruct
 class DeviceService(@Autowired val objectMapper: ObjectMapper,
                     @Value("\${configFile}") val configFile: String) {
 
-    private lateinit var devices: MutableMap<String, Device>
+    private lateinit var devices: MutableList<Device>
 
     @PostConstruct
     fun init() {
-        devices = objectMapper.readValue<List<Device>>(File(configFile)).map { it.name to it }.toMap().toMutableMap()
+        devices = objectMapper.readValue<List<Device>>(File(configFile)).toMutableList()
     }
 
     private fun saveDevices() {
-        objectMapper.writeValue(File(configFile), devices.values)
+        objectMapper.writeValue(File(configFile), devices)
     }
 
-    fun getDevices(): List<Device> = devices.values.sortedBy { it.name }.toList()
+    fun getDevices(): List<Device> = devices.sortedBy { it.name }.toList()
 
-    fun getDeviceByName(name: String) = devices.get(name)
+    fun getDeviceByName(name: String) = devices.find { it.name == name }
 
-    fun createDevice(name: String, id: String, type: DeviceType, duration: Int, brightness: Int, hue: Int?, saturation: Int?) {
-        if (devices.containsKey(name)) throw DeviceAlreadyExistException(name)
-        devices[name] = Device(name, id, type, duration, brightness, hue, saturation)
+    private fun getDeviceById(id: String) = devices.find { it.id == id }
+
+    fun createDevice(id: String, name: String, type: DeviceType, duration: Int, brightness: Int, hue: Int?, saturation: Int?) {
+        if (devices.any { it.id == id }) throw DeviceAlreadyExistException(id)
+        if (devices.any { it.name == name }) throw DeviceAlreadyExistException(name)
+        devices.add(Device(id, name, type, duration, brightness, hue, saturation))
         saveDevices()
     }
 
-    fun updateDevice(name: String, duration: Int, brightness: Int, hue: Int?, saturation: Int?) {
-        val device = devices[name] ?: throw DeviceNotFoundException(name)
-        devices[name] = device.copy(duration = duration, brightness = brightness, hue = hue, saturation = saturation)
+    fun updateDevice(id: String, name: String, duration: Int, brightness: Int, hue: Int?, saturation: Int?) {
+        val device = getDeviceById(id) ?: throw DeviceNotFoundException(id)
+        if (devices.any { it.id != id && it.name == name }) throw DeviceAlreadyExistException(name)
+        devices.remove(device)
+        devices.add(device.copy(name = name, duration = duration, brightness = brightness, hue = hue, saturation = saturation))
         saveDevices()
     }
 
-    fun removeDevice(name: String) {
-        if (!devices.containsKey(name)) throw DeviceNotFoundException(name)
-        devices.remove(name)
+    fun removeDevice(id: String) {
+        val device = getDeviceById(id) ?: throw DeviceNotFoundException(id)
+        devices.remove(device)
         saveDevices()
     }
 }
 
-class DeviceNotFoundException(val name: String) : RuntimeException()
+class DeviceNotFoundException(val id: String) : RuntimeException()
 
-class DeviceAlreadyExistException(val name: String) : RuntimeException()
+class DeviceAlreadyExistException(val idOrName: String) : RuntimeException()
