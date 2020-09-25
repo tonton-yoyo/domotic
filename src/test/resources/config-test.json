@@ -1,0 +1,18 @@
+[
+  {
+    "name": "device2",
+    "id": "2",
+    "type": "SIMPLE_BULB",
+    "duration": 30000,
+    "brightness": 100
+  },
+  {
+    "name": "device1",
+    "id": "1",
+    "type": "COLOR_BULB",
+    "brightness": 80,
+    "duration": 30000,
+    "hue": 180,
+    "saturation": 50
+  }
+]
