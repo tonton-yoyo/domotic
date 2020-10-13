@@ -11,19 +11,20 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.tontonyoyo.domotic.models.Device
-import org.tontonyoyo.domotic.models.DeviceType
-import org.tontonyoyo.domotic.services.DeviceService
-import org.tontonyoyo.domotic.tplink.TPLinkRepository
+import org.tontonyoyo.domotic.models.Config
+import org.tontonyoyo.domotic.models.Duration
+import org.tontonyoyo.domotic.models.DurationType
+import org.tontonyoyo.domotic.services.ConfigService
+import org.tontonyoyo.domotic.services.TPLinkService
 
 @RunWith(MockitoJUnitRunner::class)
 class IFTTTControllerTest {
 
     @Mock
-    private lateinit var deviceService: DeviceService
+    private lateinit var configService: ConfigService
 
     @Mock
-    private lateinit var tpLinkRepository: TPLinkRepository
+    private lateinit var tpLinkService: TPLinkService
 
     @InjectMocks
     private lateinit var controller: IFTTTController
@@ -40,8 +41,9 @@ class IFTTTControllerTest {
     @Test
     fun `sunrise should call TPLInK repository if the device is known`() {
         //Given
-        val device = Device("device", "123456789", DeviceType.SIMPLE_BULB, 30000, 100, null, 180, 50)
-        given(deviceService.getDeviceByName("123456789")).willReturn(device)
+        val duration = Duration(1, DurationType.MINUTE)
+        val device = Config("1", "123456789", duration, 100, 30000, 180, 75)
+        given(configService.getConfigByName("123456789")).willReturn(device)
 
         // When
         val response = mockMvc.perform(MockMvcRequestBuilders.get("/sunrise/123456789"))
@@ -49,13 +51,13 @@ class IFTTTControllerTest {
         // Then
         response.andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(MockMvcResultMatchers.content().string("Done"))
-        verify(tpLinkRepository).callLightingService(eq(device))
+        verify(tpLinkService).transitionLightStateOn(eq("1"), eq(duration), eq(100), eq(30000), eq(180), eq(75))
     }
 
     @Test
     fun `sunrise should not call TPLInK repository if the device is not found`() {
         //Given
-        given(deviceService.getDeviceByName("123456789")).willReturn(null)
+        given(configService.getConfigByName("123456789")).willReturn(null)
 
         // When
         val response = mockMvc.perform(MockMvcRequestBuilders.get("/sunrise/123456789"))
@@ -63,6 +65,6 @@ class IFTTTControllerTest {
         // Then
         response.andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(MockMvcResultMatchers.content().string("Done"))
-        verify(tpLinkRepository, never()).callLightingService(any())
+        verify(tpLinkService, never()).transitionLightStateOn(any(), any(), any(), any(), any(), any())
     }
 }

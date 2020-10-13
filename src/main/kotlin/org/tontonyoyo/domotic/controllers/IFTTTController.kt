@@ -5,21 +5,26 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
-import org.tontonyoyo.domotic.services.DeviceService
-import org.tontonyoyo.domotic.tplink.TPLinkRepository
+import org.tontonyoyo.domotic.services.ConfigService
+import org.tontonyoyo.domotic.services.TPLinkService
+import org.tontonyoyo.domotic.tplink.TPLInkException
 
 @RestController
-class IFTTTController @Autowired constructor(val deviceService: DeviceService, val tpLinkRepository: TPLinkRepository) {
+class IFTTTController @Autowired constructor(val configService: ConfigService, val tpLinkService: TPLinkService) {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     @GetMapping("sunrise/{name}")
     fun sunrise(@PathVariable("name") name: String): String {
-        val device = deviceService.getDeviceByName(name)
-        if (device == null) {
-            logger.error("No device found for $name")
+        val config = configService.getConfigByName(name)
+        if (config == null) {
+            logger.error("No config found for $name")
         } else {
-            tpLinkRepository.callLightingService(device)
+            try {
+                tpLinkService.transitionLightStateOn(config.deviceId, config.duration, config.brightness,config.temperature, config.hue, config.saturation)
+            } catch (ex: TPLInkException) {
+                logger.error("Error during call transitionLightStateOn", ex)
+            }
         }
         return "Done"
     }

@@ -1,18 +1,26 @@
 [
   {
-    "id": "2",
+    "deviceId": "2",
     "name": "device2",
-    "type": "SIMPLE_BULB",
-    "duration": 30000,
-    "brightness": 100
+    "duration": {
+      "value": 30,
+      "type": "SECOND"
+    },
+    "brightness": 80,
+    "temperature": 25000,
+    "hue": 150,
+    "saturation": 50
   },
   {
-    "id": "1",
+    "deviceId": "1",
     "name": "device1",
-    "type": "COLOR_BULB",
-    "brightness": 80,
-    "duration": 30000,
+    "duration": {
+      "value": 1,
+      "type": "MINUTE"
+    },
+    "brightness": 100,
+    "temperature": 30000,
     "hue": 180,
-    "saturation": 50
+    "saturation": 75
   }
 ]
